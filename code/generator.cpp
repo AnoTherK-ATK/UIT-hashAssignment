@@ -5,9 +5,16 @@ using namespace std;
 set<__int128_t> se;
 
 string genKey(__int128_t n){
-    string s;
-    for(int i = 0; i < 128; ++i){
-        if((1 << i) & n){
+    string s = "";
+    for(int i = 0; i < 50; ++i){
+        if((1ll << (i)) & n){
+            s = '1' + s;
+        }else
+            s = '0' + s;
+    }
+    n >>= 50;
+    for(int i = 0; i < 50; ++i){
+        if((1ll << (i)) & n){
             s = '1' + s;
         }else
             s = '0' + s;
@@ -23,7 +30,6 @@ string genValue(){
     return ans;
 }
 
-
 int main(int argc, char *argv[]){
     registerGen(argc, argv, 1);
     ios::sync_with_stdio(0); cin.tie(nullptr);
@@ -33,7 +39,9 @@ int main(int argc, char *argv[]){
     while(n--){
         __int128_t seed = 0;
         do{
-            seed = (rnd.next(0ll, (1ll << 50) - 1) << 50) | (rnd.next(0ll, (1ll << 50) - 1));
+            seed =(__int128_t)(rnd.next(0ll, (1ll << 50) - 1));
+            seed <<= 50;
+            seed |= (__int128_t)(rnd.next(0ll, (1ll << 50) - 1));
         }while(se.find(seed) != se.end());
         se.insert(seed);
         cout << genKey(seed) << ' ' << genValue() << '\n';
