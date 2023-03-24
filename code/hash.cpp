@@ -4,6 +4,34 @@ using namespace std;
 const int M = 1e7 + 7; //size of the hash table
 const int MOD = INT_MAX;
 
+struct Discretization{
+    __int128_t table[M];
+    int counter = 0;
+    Discretization(){
+        for(int i = 0; i < M; ++i)
+            table[i] = 0;
+    }
+
+    __int128_t convert(const string& s){
+        __int128_t number = 0;
+        for(int i = (int)s.size() - 1; i >= 0; --i){
+            if(s[i] == '1'){
+                number ^= ((__int128_t)1 << (s.size() - i - 1));
+            }
+        }
+        return number;
+    }
+
+    int discretizing(const string& s){
+        __int128_t number = convert(s);
+        table[++counter] = number; 
+        return counter;
+    }
+
+};
+
+Discretization dis;
+
 struct Hash{
     string hashTable[M]; //hash table size M
 
@@ -12,34 +40,14 @@ struct Hash{
             hashTable[i] = "";
     }
 
-    inline int getPow2(int pos, int N){
-        return N - pos + 1;
-    }
-
-    long long hashFunc(const string& binaryString){
-        int numKey[4] = {};
-        long long cnt = 0;
-        long long len = (long long)binaryString.size(); //lenght of key
-        for(int i = len - 1; i >= 0; --i){
-            if(binaryString[i] == '1'){//if the bit in position i is on
-                numKey[(getPow2(i, len) / 25)] ^= (1 << (getPow2(i, len) % 25));
-            }
-        }
-        long long hashNum = numKey[0];
-        for(int i = 1; i < 4; ++i){
-            hashNum = ((1ll * hashNum * 1ll * numKey[i])) % MOD;
-        }
-        return hashNum % M;
-    }
-
     void insert(const string& key, const string& value){
-        long long index = hashFunc(key);
-        hashTable[index] = value;
+        int intKey = dis.discretizing(key);
+        hashTable[intKey] = value;
     }
 
     string getValue(const string& key){
-        long long index = hashFunc(key);
-        return hashTable[index];
+        int intKey = dis.discretizing(key);
+        return hashTable[intKey];
     }
 } hashT;
 
