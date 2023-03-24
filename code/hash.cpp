@@ -22,6 +22,11 @@ struct Discretization{
         return number;
     }
 
+    bool search(const string& key){
+        __int128_t intKey = convert(key);
+        return binary_search(table + 1, table + 1 + counter, intKey);
+    }
+
     int discretizing(const string& s){
         __int128_t number = convert(s);
         table[++counter] = number; 
@@ -46,14 +51,19 @@ struct Hash{
     }
 
     string getValue(const string& key){
-        int intKey = dis.discretizing(key);
+        int intKey = dis.search(key);
         return hashTable[intKey];
     }
 } hashT;
 
+bool cmp(pair<string, string> x, pair<string, string> y){
+    return x.first < y.first;
+}
+
 int n, collision;
 string binaryKey;
 string value;
+vector<pair<string, string> > v;
 
 signed main(){
     ios::sync_with_stdio(0); cin.tie(nullptr);
@@ -61,9 +71,13 @@ signed main(){
     cin >> n;
     for(int i = 0; i < n; ++i){
         cin >> binaryKey >> value;
-        if(hashT.getValue(binaryKey) != "")
+        v.push_back(make_pair(binaryKey, value));
+    }
+    sort(v.begin(), v.end(), cmp);
+    for(auto i : v){
+        if(dis.search(i.first))
             ++collision;
-        hashT.insert(binaryKey, value);
+        hashT.insert(i.first, i.second);
     }
     cout << collision;
 }

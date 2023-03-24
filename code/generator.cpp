@@ -6,7 +6,7 @@ set<__int128_t> se;
 
 string genKey(__int128_t n){
     string s;
-    for(int i = 0; i < 100; ++i){
+    for(int i = 0; i < 128; ++i){
         if((1 << i) & n){
             s = '1' + s;
         }else
@@ -31,10 +31,11 @@ int main(int argc, char *argv[]){
     int n = atoi(argv[1]);
     cout << n << '\n';
     while(n--){
-        __int128_t seed;
+        __int128_t seed = 0;
         do{
-            seed = rnd.next(0ll, LLONG_MAX - 1) * rnd.next(0ll, LLONG_MAX - 1);
+            seed = (rnd.next(0ll, (1ll << 50) - 1) << 50) | (rnd.next(0ll, (1ll << 50) - 1));
         }while(se.find(seed) != se.end());
+        se.insert(seed);
         cout << genKey(seed) << ' ' << genValue() << '\n';
     }
 }
