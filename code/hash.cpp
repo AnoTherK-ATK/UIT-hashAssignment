@@ -4,12 +4,15 @@ using namespace std;
 const int M = 1e7 + 7; //size of the hash table
 const int MOD = INT_MAX;
 
-struct Discretization{
-    __int128_t table[M];
+struct Hash{
+    string hashTable[M]; //hash table size M
+    __int128_t discretization[M];
     int counter = 0;
-    Discretization(){
-        for(int i = 0; i < M; ++i)
-            table[i] = 0;
+    Hash(){
+        for(int i = 0; i < M; ++i){
+            hashTable[i] = "";
+            discretization[i] = 0;
+        }
     }
 
     __int128_t convert(const string& s){
@@ -22,37 +25,37 @@ struct Discretization{
         return number;
     }
 
-    bool search(const string& key){
+    bool isExisted(const string& key){
         __int128_t intKey = convert(key);
-        return binary_search(table + 1, table + 1 + counter, intKey);
+        return binary_search(discretization + 1, discretization + 1 + counter, intKey);
+    }
+
+    int search(const string& key){
+        __int128_t intKey = convert(key);
+        int index = lower_bound(discretization + 1, discretization + 1 + counter, intKey) - discretization;
+        if(discretization[index] == intKey)
+            return index;
+        else
+            return -1;
     }
 
     int discretizing(const string& s){
         __int128_t number = convert(s);
-        table[++counter] = number; 
+        discretization[++counter] = number; 
         return counter;
     }
 
-};
-
-Discretization dis;
-
-struct Hash{
-    string hashTable[M]; //hash table size M
-
-    Hash(){
-        for(int i = 0; i < M; ++i)
-            hashTable[i] = "";
-    }
-
     void insert(const string& key, const string& value){
-        int intKey = dis.discretizing(key);
+        int intKey = discretizing(key);
         hashTable[intKey] = value;
     }
 
     string getValue(const string& key){
-        int intKey = dis.search(key);
-        return hashTable[intKey];
+        int index = search(key);
+        if(index != -1)
+            return hashTable[index];
+        else
+            return "";
     }
 } hashT;
 
@@ -75,7 +78,7 @@ signed main(){
     }
     sort(v.begin(), v.end(), cmp);
     for(auto i : v){
-        if(dis.search(i.first))
+        if(hashT.isExisted(i.first))
             ++collision;
         hashT.insert(i.first, i.second);
     }
